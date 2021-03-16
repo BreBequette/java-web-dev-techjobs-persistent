@@ -1,4 +1,8 @@
 ## Part 1: Test it with SQL
+int id
+varchar(255) employer
+varchar(255) name
+varchar(255) skills
 
 ## Part 2: Test it with SQL
 
