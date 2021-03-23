@@ -6,10 +6,10 @@ import org.launchcode.javawebdevtechjobspersistent.models.data.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @Controller
@@ -23,7 +23,24 @@ public class SkillController {
     public String index(Model model) {
         model.addAttribute("title", "All Employers");
         model.addAttribute("skills", skillRepository.findAll());
-        return "index";
+        return "skills/index";
+    }
+
+    @GetMapping("add")
+    public String displayAddSkillForm(Model model) {
+        model.addAttribute(new Skill());
+        return "skills/add";
+    }
+
+    @PostMapping("add")
+    public String processAddSkillForm(@ModelAttribute @Valid Skill newSkill,
+                                         Errors errors, Model model) {
+
+        if (errors.hasErrors()) {
+            return "skill/add";
+        }
+        skillRepository.save(newSkill);
+        return "redirect:";
     }
 
     @GetMapping("view/{skillId}")
@@ -38,17 +55,5 @@ public class SkillController {
         }
     }
 
-//    @GetMapping("view/{employerId}")
-//    public String displayViewEmployer(Model model, @PathVariable int employerId) {
-//
-//        Optional optEmployer = employerRepository.findById(employerId);
-//        if (optEmployer.isPresent()) {
-//            Employer employer = (Employer) optEmployer.get();
-//            model.addAttribute("employer", employer);
-//            return "employers/view";
-//        } else {
-//            return "redirect:../";
-//        }
-//    }
 
 }
