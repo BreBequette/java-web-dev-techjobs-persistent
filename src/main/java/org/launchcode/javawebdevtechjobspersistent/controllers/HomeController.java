@@ -2,6 +2,7 @@ package org.launchcode.javawebdevtechjobspersistent.controllers;
 
 import org.launchcode.javawebdevtechjobspersistent.models.Employer;
 import org.launchcode.javawebdevtechjobspersistent.models.Job;
+import org.launchcode.javawebdevtechjobspersistent.models.Skill;
 import org.launchcode.javawebdevtechjobspersistent.models.data.EmployerRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.JobRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.SkillRepository;
@@ -52,6 +53,7 @@ public class HomeController {
                                        Errors errors, Model model, @RequestParam Integer employerId, @RequestParam List<Integer> skills) {
 
         Optional<Employer> result = employerRepository.findById(employerId);
+        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Job");
@@ -61,11 +63,13 @@ public class HomeController {
                 model.addAttribute("title", "Invalid employer");
             } else {
                 Employer employer = result.get();
+                newJob.setEmployer(employer);
+                newJob.setSkills(skillObjs);
                 model.addAttribute("title", "Employer Details");
                 model.addAttribute("employer", employer);
             }
         }
-        employerRepository.save(newJob.getEmployer());
+        jobRepository.save(newJob);
         return "redirect:";
 
 
@@ -73,7 +77,11 @@ public class HomeController {
 
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
-
+        Optional<Job> jobResult = jobRepository.findById(jobId);
+        Job job = jobResult.get();
+        model.addAttribute("title", "Showing Job");
+        model.addAttribute("job", job);
+        model.addAttribute("skills", job.getSkills());
         return "view";
     }
 
