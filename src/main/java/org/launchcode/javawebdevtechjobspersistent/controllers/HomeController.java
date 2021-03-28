@@ -35,7 +35,7 @@ public class HomeController {
     public String index(Model model) {
 
         model.addAttribute("title", "My Jobs");
-
+        model.addAttribute("jobs", jobRepository.findAll());
         return "index";
     }
 
@@ -52,13 +52,12 @@ public class HomeController {
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
                                        Errors errors, Model model, @RequestParam Integer employerId, @RequestParam List<Integer> skills) {
 
-        Optional<Employer> result = employerRepository.findById(employerId);
-        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
-
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Job");
             return "add";
         } else {
+            Optional<Employer> result = employerRepository.findById(employerId);
+            List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
             if (result.isEmpty()){
                 model.addAttribute("title", "Invalid employer");
             } else {
@@ -67,6 +66,7 @@ public class HomeController {
                 newJob.setSkills(skillObjs);
                 model.addAttribute("title", "Employer Details");
                 model.addAttribute("employer", employer);
+                model.addAttribute("skill", skillObjs);
             }
         }
         jobRepository.save(newJob);
